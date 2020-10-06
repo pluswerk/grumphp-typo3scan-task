@@ -23,7 +23,7 @@ final class Typo3ScanTask extends AbstractExternalTask
         $resolver->setDefaults([
             'extension_paths' => [],
             'target_version' => null,
-            'type_of_changes' => ['breaking','deprecation','feature','important'],
+            'types_of_changes' => ['breaking','deprecation','feature','important'],
             'indicators' => ['strong','weak']
         ]);
 
@@ -35,7 +35,7 @@ final class Typo3ScanTask extends AbstractExternalTask
         });
 
         $resolver->addAllowedTypes('extension_paths', ['array']);
-        $resolver->addAllowedTypes('type_of_changes', ['array']);
+        $resolver->addAllowedTypes('types_of_changes', ['array']);
         $resolver->addAllowedTypes('indicators', ['array']);
 
         return $resolver;
@@ -77,7 +77,7 @@ final class Typo3ScanTask extends AbstractExternalTask
             $arguments = $this->processBuilder->createArgumentsForCommand('typo3scan');
 
             $arguments->add('scan');
-            $arguments->addOptionalArgumentWithSeparatedValue('--only', implode(',', $config['type_of_changes']));
+            $arguments->addOptionalArgumentWithSeparatedValue('--only', implode(',', $config['types_of_changes']));
             $arguments->addOptionalArgumentWithSeparatedValue('--indicators', implode(',', $config['indicators']));
             $arguments->addOptionalArgumentWithSeparatedValue('--target', $config['target_version']);
             $arguments->add((string)$folder);
