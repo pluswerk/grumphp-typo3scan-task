@@ -1,0 +1,28 @@
+{
+    "name": "pluswerk/grumphp-typo3scan-task",
+    "description": "Scans code for usage of TYPO3 deprecated and or changed code.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sebastian Hofer",
+            "email": "sebastian.hofer@pluswerk.ag",
+            "homepage": "http://pluswerk.ag"
+        }
+    ],
+    "autoload":{
+        "psr-4":{
+            "Pluswerk\\GrumPHPTypo3ScanTask\\": "src/"
+        }
+    },
+    "autoload-dev":{
+        "psr-4":{
+            "Pluswerk\\GrumPHPTypo3ScanTask\\Test\\": "test/"
+        }
+    },
+    "require": {
+        "php": ">=7.2",
+        "phpro/grumphp": "0.19.*",
+        "michielroos/typo3scan": "^1.7"
+    }
+}
