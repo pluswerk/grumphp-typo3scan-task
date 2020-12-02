@@ -13,6 +13,7 @@ use GrumPHP\Task\Context\GitPreCommitContext;
 use GrumPHP\Task\Context\RunContext;
 use Pluswerk\GrumPHPTypo3ScanTask\Collection\Folder;
 use Pluswerk\GrumPHPTypo3ScanTask\Collection\FolderCollection;
+use SplFileInfo;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 final class Typo3ScanTask extends AbstractExternalTask
@@ -67,9 +68,10 @@ final class Typo3ScanTask extends AbstractExternalTask
         }
 
         $folders = new FolderCollection();
+        /** @var SplFileInfo $folder */
         foreach ($files as $folder) {
             foreach ($config['ignore_patterns'] as $ignore_pattern) {
-                if (preg_match($ignore_pattern, $folder)) {
+                if (preg_match($ignore_pattern, $folder->getPathname())) {
                     continue;
                 }
             }
