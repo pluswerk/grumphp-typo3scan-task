@@ -1,0 +1,24 @@
+<comment>Scanned paths:</comment>
+{%  for key, extensionPath in scannedPaths %}
+    <comment>- {{extensionPath}}</comment>
+{% endfor %}
+
+Found <comment>{{ total }}</comment> matches when checking for changes and deprecations in <comment>TYPO3 {{ targetVersion }}</comment>
+
+{% for key in statistics|keys %}{{ key }}	{% endfor %}
+
+{% for key, percentage in statistics %}{{ percentage }}	{% endfor %}
+
+
+{% for fileMatches in directoryMatches %}
+<info>{{ fileMatches.getPath|replace({ (basePath): ""}) }}</info>
+{% for fileMatch in fileMatches %}
+{{ fileMatch.getMessage|raw }} <comment>({{ fileMatch.getIndicator }})</comment>
+<comment>{{ fileMatch.getLine }}</comment> {{ fileMatches.getPath|getLineFromFile(fileMatch.getLine)|raw }}
+{% for restFile in fileMatch.getRestFiles %}
+{{ restFile|getChangeTitle|raw }}
+{{ restFile|getOnlineDocument }}
+{% endfor %}
+
+{% endfor %}
+{% endfor %}

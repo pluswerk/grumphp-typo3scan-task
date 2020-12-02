@@ -1,0 +1,9 @@
+{
+ "ignore": [
+   {
+     "file": "test/Unit/Fixtures/real_extension/Classes/Controller/FileController.php",
+     "line": 149,
+     "message": "Call to method \"redirectToUri()\""
+   }
+ ]
+}
