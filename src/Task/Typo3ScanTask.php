@@ -70,11 +70,6 @@ final class Typo3ScanTask extends AbstractExternalTask
         $folders = new FolderCollection();
         /** @var SplFileInfo $folder */
         foreach ($files as $folder) {
-            foreach ($config['ignore_patterns'] as $ignore_pattern) {
-                if (preg_match($ignore_pattern, $folder->getPathname())) {
-                    continue;
-                }
-            }
             $folders->addFileFolder($folder);
         }
 
@@ -83,6 +78,19 @@ final class Typo3ScanTask extends AbstractExternalTask
 
         /** @var Folder $folder */
         foreach ($folders as $folder) {
+            $skipFolder = false;
+
+            foreach ($config['ignore_patterns'] as $ignore_pattern) {
+                if (preg_match($ignore_pattern, (string)$folder)) {
+                    $skipFolder = true;
+                    break;
+                }
+            }
+
+            if ($skipFolder === true) {
+                continue;
+            }
+
             $arguments = $this->processBuilder->createArgumentsForCommand('typo3scan');
 
             $arguments->add('scan');
