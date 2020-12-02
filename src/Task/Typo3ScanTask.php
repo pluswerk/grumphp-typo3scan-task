@@ -24,7 +24,8 @@ final class Typo3ScanTask extends AbstractExternalTask
             'extension_paths' => [],
             'target_version' => null,
             'types_of_changes' => ['breaking','deprecation','feature','important'],
-            'indicators' => ['strong','weak']
+            'indicators' => ['strong','weak'],
+            'ignore_patterns' => []
         ]);
 
         $resolver->setAllowedValues('target_version', function ($value) {
@@ -37,6 +38,7 @@ final class Typo3ScanTask extends AbstractExternalTask
         $resolver->addAllowedTypes('extension_paths', ['array']);
         $resolver->addAllowedTypes('types_of_changes', ['array']);
         $resolver->addAllowedTypes('indicators', ['array']);
+        $resolver->addAllowedTypes('ignore_patterns', ['array']);
 
         return $resolver;
     }
@@ -66,6 +68,11 @@ final class Typo3ScanTask extends AbstractExternalTask
 
         $folders = new FolderCollection();
         foreach ($files as $folder) {
+            foreach ($config['ignore_patterns'] as $ignore_pattern) {
+                if (preg_match($ignore_pattern, $folder)) {
+                    continue;
+                }
+            }
             $folders->addFileFolder($folder);
         }
 
