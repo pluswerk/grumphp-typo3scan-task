@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Pluswerk\GrumPHPTypo3ScanTask\Task;
 
-use GrumPHP\Collection\FilesCollection;
 use GrumPHP\Runner\TaskResult;
 use GrumPHP\Runner\TaskResultInterface;
 use GrumPHP\Task\AbstractExternalTask;
@@ -38,7 +37,7 @@ final class Typo3ScanTask extends AbstractExternalTask
             'target_version' => null,
             'types_of_changes' => ['breaking','deprecation','feature','important'],
             'indicators' => ['strong','weak'],
-            'triggered_by' => ['php','typoscript']
+            'triggered_by' => ['php']
         ]);
 
         $resolver->setAllowedValues('target_version', function ($value) {
@@ -84,7 +83,10 @@ final class Typo3ScanTask extends AbstractExternalTask
         $scannerService = new ScannerService($config['target_version'], $this->paths);
         $scannerResult = $scannerService->scan($files);
 
+
         $scannerResult = $this->filterIgnoredMatches($scannerResult);
+        $scannerResult = $this->filterByType($scannerResult, $config);
+        $scannerResult = $this->filterByIndicators($scannerResult, $config);
 
         $total = $scannerResult->countAll();
 
@@ -114,6 +116,76 @@ final class Typo3ScanTask extends AbstractExternalTask
         }
 
         return TaskResult::createPassed($this, $context);
+    }
+
+    /**
+     * @param
+     * @param
+     * @return
+     */
+    protected function filterByType(DirectoryMatches $directoryMatches, array $config): DirectoryMatches
+    {
+        $only = $config['types_of_changes'];
+        $only = array_map('strtoupper', $only);
+
+        $path = $directoryMatches->getPath();
+
+        $filteredDirectoryMatches = new DirectoryMatches($path);
+
+        /**
+         * @var
+         */
+        foreach ($directoryMatches as $fileMatches) {
+            $filteredFileMatches = new FileMatches($fileMatches->getPath());
+            /**
+             * @var
+             */
+            foreach ($fileMatches as $fileMatch) {
+                if (in_array($fileMatch->getType(), $only, true)) {
+                    $filteredFileMatches->append($fileMatch);
+                }
+            }
+            if (count($filteredFileMatches)) {
+                $filteredDirectoryMatches->append($filteredFileMatches);
+            }
+        }
+
+        return $filteredDirectoryMatches;
+    }
+
+    /**
+     * @param
+     * @param
+     * @return
+     */
+    protected function filterByIndicators(DirectoryMatches $directoryMatches, array $config): DirectoryMatches
+    {
+        $indicators = $config['indicators'];
+        $indicators = array_map('strtoupper', $indicators);
+
+        $path = $directoryMatches->getPath();
+
+        $filteredDirectoryMatches = new DirectoryMatches($path);
+
+        /**
+         * @var
+         */
+        foreach ($directoryMatches as $fileMatches) {
+            $filteredFileMatches = new FileMatches($fileMatches->getPath());
+            /**
+             * @var
+             */
+            foreach ($fileMatches as $fileMatch) {
+                if (in_array(strtoupper($fileMatch->getIndicator()), $indicators, true)) {
+                    $filteredFileMatches->append($fileMatch);
+                }
+            }
+            if (count($filteredFileMatches)) {
+                $filteredDirectoryMatches->append($filteredFileMatches);
+            }
+        }
+
+        return $filteredDirectoryMatches;
     }
 
     /**

@@ -8,8 +8,7 @@ grumphp:
     typo3scan:
       extension_paths:
         - 'test/Unit/Fixtures/real_extension'
-      types_of_changes: []
-      indicators: []
+      types_of_changes: ['breaking']
       target_version: '10'
   extensions:
     - Pluswerk\GrumPHPTypo3ScanTask\Loader\ExtensionLoader
